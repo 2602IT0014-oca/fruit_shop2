@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
+  get "mypage/show"
+  devise_for :users
   resources :products
+  resources :mypage, only: [:show] # ユーザ情報の詳細表示
   root to: "homes#top"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
