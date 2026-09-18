@@ -11,7 +11,7 @@
 
   <br>
 
-  <%= link_to '削除', destroy_product_path(@product),  data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
+  <%= link_to '削除', product_path(@product), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' } %>
   <% else %>
   <%= link_to '注文する', new_order_path(product_id:@product.id) %>
   <% end %>

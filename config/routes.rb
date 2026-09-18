@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  get "orders/new"
+   
   get "mypage/show"
   devise_for :users
   resources :products
