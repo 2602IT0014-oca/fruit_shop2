@@ -1,6 +1,13 @@
 <h1>新規商品登録</h1>
 
 <%= form_with model: @product do |f| %>
+
+  <!-- 追加 ここから -->
+  <div>
+    <%= f.label :photo, "画像" %>
+    <%= f.file_field :photo %>
+  </div>
+  <!-- 追加 ここまで -->
   <div>
     <%= f.label :name, "商品名" %>
     <%= f.text_field :name %>

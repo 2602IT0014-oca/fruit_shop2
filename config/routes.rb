@@ -1,4 +1,15 @@
 Rails.application.routes.draw do
+  resources :carts, only: [:show, :index] do
+  # セッションカートに商品を追加、数量を更新、商品を削除するアクション
+    collection do
+      post :add_product  # カートに商品を追加
+    end
+    member do
+      delete :remove_item  # カートから商品を削除
+      post :update_quantity  # カート内の商品数を変更
+    end
+  end
+
    
   get "mypage/show"
   devise_for :users

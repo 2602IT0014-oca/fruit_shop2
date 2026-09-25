@@ -1,0 +1,14 @@
+<% if session[:recent_product_ids].present?&& !(current_user&.admin_flg) %>
+  <div>
+    <h4>見た商品</h4>
+    <% Product.find(session[:recent_product_ids]).each do |product| %>
+      <div>
+        <% if product.photo.attached? %>
+            <%= image_tag product.thumbnail %>
+        <% end %>
+        <br>
+        <%= link_to product.name, product_path(product) %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

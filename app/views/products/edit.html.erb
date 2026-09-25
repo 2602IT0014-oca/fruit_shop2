@@ -2,6 +2,12 @@
 <h1>商品編集</h1>
 
 <%= form_with(model: @product, local: true) do |f| %>
+  <!-- 追加 ここから -->
+  <div>
+    <%= f.label :photo, "画像" %>
+    <%= f.file_field :photo %>
+  </div>
+  <!-- 追加 ここまで -->
   <div>
     <%= f.label :name, "商品名" %>
     <%= f.text_field :name %>
