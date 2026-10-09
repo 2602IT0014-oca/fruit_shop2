@@ -26,12 +26,19 @@
         <li>
           <%= link_to "ログイン", new_user_session_path %>
         </li>
+        <li>
+    <%= link_to "トップページ", root_path %>
+         </li>
+         <li>
+  <%= link_to "カート", carts_path %>
+        </li>
       <% end %>
       
     </header>
       <%= render "layouts/flash" %> <!-- 追加 -->
 
-    <%= yield %>
-     <%= render "layouts/viewed_products" %> <!-- 追加 -->
+  
+     <%= yield %>
+     <%= render "layouts/viewed_products" %>
   </body>
 </html>

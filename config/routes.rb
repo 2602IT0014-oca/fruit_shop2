@@ -1,49 +1,68 @@
+
 Rails.application.routes.draw do
-  resources :carts, only: [:show, :index] do
-  # セッションカートに商品を追加、数量を更新、商品を削除するアクション
-    collection do
-      post :add_product  # カートに商品を追加
-    end
-    member do
-      delete :remove_item  # カートから商品を削除
-      post :update_quantity  # カート内の商品数を変更
-    end
-  end
 
-   
-  get "mypage/show"
+  # ==============================
+  # ユーザー認証（ログイン・新規登録）
+  # ==============================
   devise_for :users
-  resources :products
-  resources :mypage, only: [:show] # ユーザ情報の詳細表示
+
+  # ==============================
+  # トップページ
+  # ==============================
   root to: "homes#top"
-  # 注文関連
-  #注文入力・注文作成
-  resources :orders, only: [:index, :new, :create] do 
+
+  # ==============================
+  # 商品管理
+  # ==============================
+  resources :products
+
+  # ==============================
+  # マイページ
+  # ==============================
+  get "mypage/show"
+  resources :mypage, only: [:show]
+
+  # ==============================
+  # カート関連
+  # ==============================
+  resources :carts, only: [:show, :index] do
+
+    # セッションカートに商品を追加する
     collection do
-      post :confirm   # 注文確認
+      post :add_product
     end
 
+    # カート内の商品を削除・数量変更する
     member do
-      get :complete  # 注文完了
+      delete :remove_item
+      post :update_quantity
     end
+
   end
 
+  # ==============================
+  # 注文関連
+  # ==============================
+  resources :orders, only: [:index, :new, :create] do
 
+    # 注文内容を確認する
+    collection do
+      post :confirm
+    end
 
+    # 注文完了画面を表示する
+    member do
+      get :complete
+    end
 
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  end
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
-  # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
-  # get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-
-  # Defines the root path route ("/")
-  # root "posts#index"
-  
-  
+  # ==============================
+  # Railsのヘルスチェック
+  # ==============================
+  get "up" => "rails/health#show",
+      as: :rails_health_check
+    # ユーザーのカート内の商品操作
+  resources :cart_items, only: [:create, :update, :destroy]  
 
 end
