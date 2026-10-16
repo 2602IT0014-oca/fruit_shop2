@@ -65,4 +65,5 @@ Rails.application.routes.draw do
     # ユーザーのカート内の商品操作
   resources :cart_items, only: [:create, :update, :destroy]  
 
+  
 end
