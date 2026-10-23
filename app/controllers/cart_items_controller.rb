@@ -49,4 +49,4 @@ class CartItemsController < ApplicationController
     params.require(:cart_item).permit(:product_id, :quantity)
   end
 end
-end
+

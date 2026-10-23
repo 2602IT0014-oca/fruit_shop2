@@ -1,30 +1,52 @@
-<h1>注文</h1>
+<h1>注文画面</h1>
 
 <%= form_with(model: @order, url: confirm_orders_path, local: true, data: { turbo: false }) do |form| %>
   <% if @order.errors.any? %>
     <div id="error_explanation">
-      <h2><%= pluralize(@order.errors.count, "error") %> prohibited this user from being saved:</h2>
+      <h2><%= @order.errors.count %>件のエラーが発生しました:</h2>
 
       <ul>
-        <% @order.errors.each do |error| %>
-          <li><%= error.full_message %></li>
+        <% @order.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
         <% end %>
       </ul>
     </div>
   <% end %>
-  
-  <%= form.hidden_field :product_id, value: @product.id %>
 
-  <h4>商品名</h4>
-  <%= @product.name %>
-  
-  <h4>個数</h4>
-  <%= form.number_field :count %>
+  <h3>カート内の商品</h3>
+  <% if @cart_items.present? %>
+    <table>
+      <thead>
+        <tr>
+          <th>商品名</th>
+          <th>個数</th>
+          <th>単価</th>
+          <th>小計</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @cart_items.each do |cart_item| %>
+          <tr>
+            <td><%= cart_item.product.name %></td>
+            <td><%= cart_item.quantity %></td>
+            <td>¥<%= number_with_delimiter(cart_item.product.price) %></td>
+            <td>¥<%= number_with_delimiter(cart_item.product.price * cart_item.quantity) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
 
-  <h4>送り先</h4>
-  <%= form.text_field :address %>
+    <h4>合計金額</h4>
+    <%= "¥" + number_with_delimiter(@cart_total) %>
 
-  <div>
-    <%= form.submit '注文確認' %>
-  </div>
+    <h4>送り先</h4>
+    <%= form.text_field :address, placeholder: "お届け先の住所を入力してください" %>
+    
+    <div style="margin-top: 15px;">
+      <%= form.submit '注文確認画面へ進む' %>
+    </div>
+  <% else %>
+    <p>カートに商品が入っていません。</p>
+    <%= link_to "商品一覧へ戻る", products_path %>
+  <% end %>
 <% end %>

@@ -1,55 +1,67 @@
 class OrdersController < ApplicationController
+  before_action :authenticate_user! # ログイン必須（Deviseの場合）
+
   def new
-    @order = Order.new   # 新しい注文オブジェクトを作成
-    @product = Product.find(params[:product_id])   # URLから商品を取得
+    @order = Order.new
+    # パラメータに product_id が存在しない場合は商品一覧へ安全に遷移させる
+    if params[:product_id].present?
+      @product = Product.find(params[:product_id])
+    else
+      redirect_to products_path, alert: "商品が選択されていません。"
+    end
   end
 
   def index
-    @orders = current_user.orders.all # ユーザーに紐付いた注文履歴を表示
+    @orders = current_user.orders.order(created_at: :desc) # ユーザーに紐付いた注文履歴（新着順）
   end
-  
-    # 注文内容の確認画面
-  def confirm
-    @order = Order.new(order_params)          # フォームから送信された注文情報を取得
-    @product = Product.find(order_params[:product_id]) # 注文対象の商品を取得
-    @order.user = current_user  # 現在のユーザーを注文に紐付け
 
-    if @order.valid?
-        @order.total_price = cal_total_price(@product.price, @order.count) # 合計金額を計算して設定
+  # 注文内容の確認画面
+  def confirm
+    @order = Order.new(order_params)
+    @order.user = current_user
+
+    if order_params[:product_id].present?
+      @product = Product.find(order_params[:product_id])
+      
+      if @order.valid?
+        @order.total_price = cal_total_price(@product.price, @order.count)
       else
-        # バリデーションNGなら入力画面に戻る
-        render :new and return
+        render :new, status: :unprocessable_entity
+      end
+    else
+      redirect_to products_path, alert: "商品情報が不足しています。"
     end
   end
-    # 注文登録
+
+  # 注文登録
   def create
     @order = Order.new(order_params)
-    @order.user_id = current_user.id # ログイン中のユーザーIDを紐付け
-    # 注文が正常に保存できた場合
+    @order.user = current_user
+
     if @order.save
-      redirect_to complete_order_path(@order)     # 登録が完了したら注文完了ページへ遷移
+      redirect_to complete_order_path(@order), notice: "注文が完了しました。"
     else
-      @product = Product.find(@order.product_id)
-      redirect_to new_order_path(product_id: @order.product_id)        # 注文入力へ戻る
+      @product = Product.find_by(id: @order.product_id)
+      render :new, status: :unprocessable_entity
     end
   end
 
   # 注文完了
   def complete
-    @order = Order.find(params[:id])
-    @product = Product.find(@order.product_id)
+    @order = current_user.orders.find(params[:id]) # セキュリティのため current_user から検索
+    @product = Product.find_by(id: @order.product_id)
   end
-
 
   private
 
-    # 許可する注文パラメータの設定（ストロングパラメータ）
-    def order_params
-      params.require(:order).permit(:total_price, :address, :count, :product_id)
-    end
+  # 許可する注文パラメータの設定（ストロングパラメータ）
+  def order_params
+    params.require(:order).permit(:total_price, :address, :count, :product_id)
+  end
 
-    # 合計金額を計算
-    def cal_total_price(price, count)
-      return price * count  # 商品価格と個数を掛けて合計金額を返す
-    end
+  # 合計金額を計算
+  def cal_total_price(price, count)
+    return 0 if price.nil? || count.nil?
+    price * count
+  end
 end

@@ -9,36 +9,31 @@
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
-
   <body>
     <header>
-
-      <% if user_signed_in? %>
-        <li> <%= link_to "商品一覧", products_path %></li>
-        <li><%= link_to "注文履歴", orders_path %></li>
-        <li> <%= link_to "マイページ", mypage_path(current_user) %></li>
-        <li> <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete } %></li>
-
-      <% else %>
-        <li>
-          <%= link_to "サインアップ", new_user_registration_path %>
-        </li>
-        <li>
-          <%= link_to "ログイン", new_user_session_path %>
-        </li>
-        <li>
-    <%= link_to "トップページ", root_path %>
-         </li>
-         <li>
-  <%= link_to "カート", carts_path %>
-        </li>
-      <% end %>
-      
+      <nav>
+        <ul>
+          <% if user_signed_in? %>
+            <li><%= link_to "商品一覧", products_path %></li>
+            <li><%= link_to "注文履歴", orders_path %></li>
+            <li><%= link_to "マイページ", mypage_path(current_user) %></li>
+            <li><%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete } %></li>
+            <%# 一般ユーザー（管理者でない）の場合のみカートを表示 %>
+            <% unless current_user.admin_flg? %>
+              <li><%= link_to "カート", cart_path(current_user.cart) %></li>
+            <% end %>
+          <% else %>
+            <li><%= link_to "サインアップ", new_user_registration_path %></li>
+            <li><%= link_to "ログイン", new_user_session_path %></li>
+            <li><%= link_to "トップページ", root_path %></li>
+            <li><%= link_to "カート", carts_path %></li>
+          <% end %>
+        </ul>
+      </nav>
     </header>
-      <%= render "layouts/flash" %> <!-- 追加 -->
 
-  
-     <%= yield %>
-     <%= render "layouts/viewed_products" %>
+    <%= render "layouts/flash" %>
+    <%= yield %>
+    <%= render "layouts/viewed_products" %>
   </body>
 </html>
