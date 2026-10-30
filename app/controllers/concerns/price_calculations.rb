@@ -1,7 +1,7 @@
-
 # app/controllers/concerns/price_calculations.rb
 
 module PriceCalculations
+  extend ActiveSupport::Concern
 
   # 商品ごとの小計を計算する
   def calculate_item_total(price, count)
@@ -15,8 +15,9 @@ module PriceCalculations
 
   # セッションカートの合計金額を計算する
   def cart_calculation
-    session[:cart].each do |item|
+    return if session[:cart].blank?
 
+    session[:cart].each do |item|
       # 商品情報を取得する
       product = Product.find(item["id"].to_i)
 
@@ -24,9 +25,7 @@ module PriceCalculations
       item["price"] = product.price
 
       # 商品ごとの小計を計算する
-      item["item_price"] = calculate_item_total(
-        item["price"], item["count"]
-      )
+      item["item_price"] = calculate_item_total(item["price"], item["count"])
     end
 
     # カート全体の合計金額を計算する
@@ -37,9 +36,8 @@ module PriceCalculations
 
   # ログインユーザーのカート合計金額を再計算する
   def user_cart_calculation
-
-    # 現在のユーザーのカートを取得する
-    cart = Cart.find_by(user_id: current_user.id)
+    cart = current_user.cart || Cart.find_by(user_id: current_user.id)
+    return unless cart
 
     # 商品ごとの小計を計算する
     @item_totals = cart.cart_items.map do |item|
@@ -47,13 +45,6 @@ module PriceCalculations
     end
 
     # カート全体の合計金額を計算する
-    @cart_total = calculate_total_sum(@item_totals)
-
-  end
- # ユーザのカート合計金額を再計算
-  def user_cart_calculation
-    cart = Cart.find_by(user_id: current_user.id)
-    @item_totals = cart.cart_items.map { |item| calculate_item_total(item.product.price, item.quantity) }
     @cart_total = calculate_total_sum(@item_totals)
   end
 end

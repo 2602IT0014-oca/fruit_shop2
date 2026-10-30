@@ -1,32 +1,84 @@
+
 <h1>注文履歴一覧</h1>
 
 <% if @orders.any? %>
-  <% # 注文を「注文日時（年月日）」ごとにグループ化して日時データを変換 %> 
-  <% @orders.group_by { |order| order.created_at.strftime("%Y年%m月%d日") }.each do |ordered_at, grouped_orders| %>
-    <p><strong><%= ordered_at %></strong></p>
+
+  <% @orders.each do |order| %>
+
+    <h3>
+      注文日：
+      <%= order.created_at.strftime("%Y年%m月%d日") %>
+    </h3>
+
     <table>
       <thead>
         <tr>
           <th>商品名</th>
           <th>数量</th>
-          <th>合計金額</th>
+          <th>単価</th>
+          <th>小計</th>
           <th>配送先</th>
         </tr>
       </thead>
+
       <tbody>
-        <% # grouped_orders は日時にまとめられた注文の配列 %>
-        <% grouped_orders.each do |order| %>
+        <% order.order_details.each_with_index do |detail, index| %>
+
           <tr>
-            <td><%= order.product&.name %></td>
-            <td><%= order.try(:quantity) || order.try(:count) || 1 %></td>
-            <td><%= number_to_currency(order.total_price, unit: "¥", precision: 0) %></td>
-            <td><%= order.address %></td>
+            <td>
+              <%= detail.product.name %>
+            </td>
+
+            <td>
+              <%= detail.quantity %> 個
+            </td>
+
+            <td>
+              <%= number_to_currency(
+                detail.price,
+                unit: "¥",
+                precision: 0
+              ) %>
+            </td>
+
+            <td>
+              <%= number_to_currency(
+                detail.price * detail.quantity,
+                unit: "¥",
+                precision: 0
+              ) %>
+            </td>
+
+            <% if index == 0 %>
+              <td rowspan="<%= order.order_details.size %>">
+                <%= order.address %>
+              </td>
+            <% end %>
           </tr>
+
         <% end %>
       </tbody>
     </table>
-    <br>
+
+    <p>
+      **注文合計：**
+      <%= number_to_currency(
+        order.total_price,
+        unit: "¥",
+        precision: 0
+      ) %>
+    </p>
+
+    <hr>
+
   <% end %>
+
 <% else %>
+
   <p>注文履歴はまだありません。</p>
+
 <% end %>
+
+<div style="margin-top: 20px;">
+  <%= link_to "商品一覧へ戻る", products_path %>
+</div>

@@ -1,52 +1,28 @@
-<h1>注文画面</h1>
+<h1>注文完了</h1>
 
-<%= form_with(model: @order, url: confirm_orders_path, local: true, data: { turbo: false }) do |form| %>
-  <% if @order.errors.any? %>
-    <div id="error_explanation">
-      <h2><%= @order.errors.count %>件のエラーが発生しました:</h2>
+<h3>ご注文が完了しました。</h3>
 
-      <ul>
-        <% @order.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+<h4>注文商品一覧</h4>
+<table>
+  <thead>
+    <tr>
+      <th>商品名</th>
+      <th>個数</th>
+      <th>価格</th>
+      <th>小計</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @order.order_details.each do |detail| %>
+      <tr>
+        <td><%= detail.product.name %></td>
+        <td><%= detail.quantity %> 個</td>
+        <td><%= "¥" + number_with_delimiter(detail.price) %></td>
+        <td><%= "¥" + number_with_delimiter(detail.price * detail.quantity) %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
 
-  <h3>カート内の商品</h3>
-  <% if @cart_items.present? %>
-    <table>
-      <thead>
-        <tr>
-          <th>商品名</th>
-          <th>個数</th>
-          <th>単価</th>
-          <th>小計</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% @cart_items.each do |cart_item| %>
-          <tr>
-            <td><%= cart_item.product.name %></td>
-            <td><%= cart_item.quantity %></td>
-            <td>¥<%= number_with_delimiter(cart_item.product.price) %></td>
-            <td>¥<%= number_with_delimiter(cart_item.product.price * cart_item.quantity) %></td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-
-    <h4>合計金額</h4>
-    <%= "¥" + number_with_delimiter(@cart_total) %>
-
-    <h4>送り先</h4>
-    <%= form.text_field :address, placeholder: "お届け先の住所を入力してください" %>
-    
-    <div style="margin-top: 15px;">
-      <%= form.submit '注文確認画面へ進む' %>
-    </div>
-  <% else %>
-    <p>カートに商品が入っていません。</p>
-    <%= link_to "商品一覧へ戻る", products_path %>
-  <% end %>
-<% end %>
+<h4>合計金額</h4>
+<%= "¥" + number_with_delimiter(@order.total_price) %>

@@ -1,23 +1,70 @@
 <h1>注文確認</h1>
 
-<%= form_with(model: @order) do |form| %>
-  <h4>商品名</h4>
-  <%= @product.name %>
-  <%= form.hidden_field :product_id, value: @product.id %>
+<h3>注文商品一覧</h3>
 
-  <h4>個数</h4>
-  <%= @order.count %> 個
-  <%= form.hidden_field :count, value: @order.count %>
+<table>
+  <thead>
+    <tr>
+      <th>商品名</th>
+      <th>個数</th>
+      <th>価格</th>
+      <th>小計</th>
+    </tr>
+  </thead>
 
-  <h4>合計金額</h4>
-  <%= @order.total_price %> 円
-  <%= form.hidden_field :total_price, value: @order.total_price %>
+  <tbody>
+    <% @cart_items.each do |cart_item| %>
+      <tr>
+        <td>
+          <%= cart_item.product.name %>
+        </td>
 
-  <h4>送り先</h4>
+        <td>
+          <%= cart_item.quantity %>
+        </td>
+
+        <td>
+          ¥<%= number_with_delimiter(cart_item.product.price) %>
+        </td>
+
+        <td>
+          ¥<%= number_with_delimiter(
+            cart_item.product.price * cart_item.quantity
+          ) %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<h3>合計金額</h3>
+
+<p>
+  ¥<%= number_with_delimiter(@total_price) %>
+</p>
+
+<h3>お届け先</h3>
+
+<p>
   <%= @order.address %>
-  <%= form.hidden_field :address, value: @order.address %>
+</p>
+
+<%= form_with(
+  model: @order,
+  url: orders_path,
+  method: :post,
+  local: true,
+  data: { turbo: false }
+) do |form| %>
+
+  <%= form.hidden_field :address %>
 
   <div class="actions">
-    <%= form.submit '注文' %>
+    <%= form.submit "注文確定" %>
   </div>
+
 <% end %>
+
+<div style="margin-top: 15px;">
+  <%= link_to "注文画面に戻る", new_order_path %>
+</div>

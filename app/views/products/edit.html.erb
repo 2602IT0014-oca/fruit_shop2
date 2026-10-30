@@ -1,13 +1,6 @@
-
 <h1>商品編集</h1>
 
 <%= form_with(model: @product, local: true) do |f| %>
-  <!-- 追加 ここから -->
-  <div>
-    <%= f.label :photo, "画像" %>
-    <%= f.file_field :photo %>
-  </div>
-  <!-- 追加 ここまで -->
   <div>
     <%= f.label :name, "商品名" %>
     <%= f.text_field :name %>
@@ -21,6 +14,19 @@
   <div>
     <%= f.label :price, "価格" %>
     <%= f.number_field :price %>
+  </div>
+  
+  <div>
+    <%= f.label :photo, "画像" %>
+    <%= f.file_field :photo %>
+  </div>
+
+  <div>
+    <%= f.label :status, "販売状況" %>
+    <% Product.statuses.keys.each do |status| %>
+      <%= f.radio_button :status, status %>
+      <%= status %>
+    <% end %>
   </div>
 
   <div>
