@@ -25,7 +25,7 @@
     <%= f.label :status, "販売状況" %>
     <% Product.statuses.keys.each do |status| %>
       <%= f.radio_button :status, status %>
-      <%= status %>
+      <%= f.label :status, I18n.t("enums.product.status.#{status}") %>
     <% end %>
   </div>
 

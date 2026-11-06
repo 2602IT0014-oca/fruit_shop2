@@ -1,0 +1,11 @@
+ja:
+  devise:
+    failure:
+      already_authenticated: "すでにログインしています。"
+      invalid: "メールアドレスまたはパスワードが正しくありません。"
+      unauthenticated: "続行するにはログインしてください。"
+    registrations:
+      signed_up: "アカウントを作成しました。"
+    sessions:
+      signed_in: "ログインしました。"
+      signed_out: "ログアウトしました。"

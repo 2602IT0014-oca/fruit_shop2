@@ -8,7 +8,7 @@
   <p>商品名: <%= @product.name %></p>
   <p>説明: <%= @product.description %></p>
   <p>価格: <%= @product.price %>円</p>
-  <p>販売状況: <%= @product.status %></p>
+  <p>販売状況: <%= I18n.t("enums.product.status.#{@product.status}") %></p>
 </div>
 
 <% if current_user.admin_flg == true %>

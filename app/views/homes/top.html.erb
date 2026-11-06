@@ -7,11 +7,15 @@
 <h2>商品一覧</h2>
 
 <% @products.each do |product| %>
+  <div>
   <% if product.photo.attached? %>
     <%= image_tag product.thumbnail %>
+    <br>
   <% end %>
   <br>
   <%= link_to product.name, product_path(product) %>
   <br>
   <%= number_to_currency(product.price, unit: "¥", precision: 0) %>
+  </div>
+  <hr>
 <% end %>
